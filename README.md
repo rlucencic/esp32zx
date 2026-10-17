@@ -34,8 +34,9 @@ your network, handle everything else.
 It's the sibling of [esp32ste](https://github.com/rlucencic/esp32ste) (Atari
 STE), [esp32mac](https://github.com/rlucencic/esp32mac) (Macintosh Plus,
 SE, Classic), [esp32cpc](https://github.com/rlucencic/esp32cpc) (Amstrad
-CPC) and [esp32cbm](https://github.com/rlucencic/esp32cbm) (Commodore 64 and
-128); all five are built on the shared runtime
+CPC), [esp32cbm](https://github.com/rlucencic/esp32cbm) (Commodore 64 and
+128) and [esp32xl](https://github.com/rlucencic/esp32xl) (Atari 800XL and
+130XE); all six are built on the shared runtime
 [esp32emu](https://github.com/rlucencic/esp32emu), which also holds the Z80
 core this one shares with the CPC and the C128.
 
@@ -137,7 +138,7 @@ ROMs, you can also copy them into a `roms` folder on the SD card.
    network: the clock is set from the internet, and the web page becomes
    reachable.
 2. Tap **Bluetooth** to pair a keyboard.
-3. Choose the **model**, then tap **Start Spectrum**.
+3. Choose the **model**, then tap **Start**.
 4. Open `http://spectrum.local` and drop a tape onto the page, then
    **Insert into… → Tape**, and choose **Tape Loader** on the Spectrum (or
    `LOAD ""`).
@@ -147,7 +148,7 @@ ROMs, you can also copy them into a `roms` folder on the SD card.
 | To | Do |
 |---|---|
 | Get back to the setup screen | Hold the top-right corner of the screen for 2 s |
-| Change the model or the tape speed | On the setup screen; **Restart Spectrum** applies it |
+| Change the model or the tape speed | On the setup screen; **Restart** applies it |
 | Load a tape | Insert it into **Tape**, then **Tape Loader** in the menu, or `LOAD ""` |
 | Save to tape | Insert a `.TAP` (**New** makes an empty one), then `SAVE "name"` |
 | Use a +3 disk | Insert the `.DSK` into **A:** on the +3: **Loader** in the menu boots it; `CAT`, `LOAD "name"` |
