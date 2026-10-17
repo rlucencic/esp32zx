@@ -400,8 +400,8 @@ static void tape_set(int i)
 }
 
 static const emu_choice_t choices[] = {
-    { "Model", model_names, model_get, model_set },
-    { "Tape", tape_names, tape_get, tape_set },
+    { "Model", model_names, model_get, model_set, false },
+    { "Tape", tape_names, tape_get, tape_set, false },
 };
 
 /* ---- Drives ---- */
