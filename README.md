@@ -32,10 +32,11 @@ your network, handle everything else.
 
 It's the sibling of [esp32ste](https://github.com/rlucencic/esp32ste) (Atari
 STE), [esp32mac](https://github.com/rlucencic/esp32mac) (Macintosh Plus,
-SE, Classic) and [esp32cpc](https://github.com/rlucencic/esp32cpc) (Amstrad
-CPC); all four are built on the shared runtime
+SE, Classic), [esp32cpc](https://github.com/rlucencic/esp32cpc) (Amstrad
+CPC) and [esp32cbm](https://github.com/rlucencic/esp32cbm) (Commodore 64 and
+128); all five are built on the shared runtime
 [esp32emu](https://github.com/rlucencic/esp32emu), which also holds the Z80
-core this one shares with the CPC.
+core this one shares with the CPC and the C128.
 
 ## Features
 
