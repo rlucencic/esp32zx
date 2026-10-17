@@ -1,0 +1,11 @@
+build/
+managed_components/
+sdkconfig
+sdkconfig.old
+dependencies.lock
+roms/*.rom
+components/zx/host/build/
+__pycache__/
+*.ppm
+.DS_Store
+.vscode
