@@ -1,8 +1,10 @@
 build/
+build-tab5/
 managed_components/
 sdkconfig
 sdkconfig.old
 dependencies.lock
+dependencies.lock.esp32p4
 roms/*.rom
 components/zx/host/build/
 __pycache__/

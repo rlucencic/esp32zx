@@ -1,12 +1,13 @@
 <h1 align="center">esp32zx</h1>
 
 <p align="center">
-  <b>A ZX Spectrum 128K, +2 or +3 on a 7-inch ESP32-S3 touch-screen board.</b><br>
+  <b>A ZX Spectrum 128K, +2 or +3 on a 7-inch ESP32-S3 touch-screen board or an M5Stack Tab5.</b><br>
   Z80 with the ULA's contention, AY sound, tapes that load at once, the +3's disks and a Beta 128 (TR-DOS) on the 128K and +2, Bluetooth keyboard.
 </p>
 
 <p align="center">
   <img alt="ESP32-S3" src="https://img.shields.io/badge/ESP32--S3-N16R8-e7352c">
+  <img alt="ESP32-P4" src="https://img.shields.io/badge/ESP32--P4-M5Stack%20Tab5-e7352c">
   <img alt="ESP-IDF" src="https://img.shields.io/badge/ESP--IDF-v5.5-blue">
   <img alt="LVGL" src="https://img.shields.io/badge/LVGL-9.4-5e48e8">
   <img alt="Z80" src="https://img.shields.io/badge/CPU-Z80-555">
@@ -24,8 +25,8 @@
   pixel is shown twice in each direction on the panel.</sub>
 </p>
 
-esp32zx turns the Makerfabs MaTouch ESP32-S3 Parallel TFT with Touch 7"
-into a ZX Spectrum. The picture, border included, fills the panel's height;
+esp32zx turns the Makerfabs MaTouch ESP32-S3 Parallel TFT with Touch 7", or an
+M5Stack Tab5, into a ZX Spectrum. The picture, border included, fills the panel's height;
 a Bluetooth keyboard works the Spectrum, and tapes, disks and snapshots come
 from the microSD card. A setup screen on the touch panel, and a web page on
 your network, handle everything else.
@@ -92,17 +93,18 @@ core this one shares with the CPC and the C128.
 
 ## Hardware
 
-| | |
-|---|---|
-| Board | Makerfabs MaTouch ESP32-S3 Parallel TFT with Touch 7" |
-| Module | ESP32-S3-WROOM-1-N16R8: 16 MB flash, 8 MB octal PSRAM |
-| Screen | 1024×600 RGB, GT911 capacitive touch |
-| Storage | microSD card (FAT32) |
-| Input | any BLE keyboard |
+| | Makerfabs MaTouch ESP32-S3 7" | M5Stack Tab5 |
+|---|---|---|
+| Chip | ESP32-S3-WROOM-1-N16R8: 16 MB flash, 8 MB octal PSRAM | ESP32-P4 (RISC-V, 360 MHz): 16 MB flash, 32 MB PSRAM; an ESP32-C6 for WiFi and Bluetooth |
+| Screen | 7" 1024×600 RGB, GT911 capacitive touch | 5" 1280×720 MIPI-DSI, capacitive touch, held landscape |
+| Storage | microSD card (FAT32 or exFAT) | microSD card (FAT32 or exFAT) |
+| Input | any BLE keyboard | any BLE keyboard, or the Tab5 Keyboard |
+| Sound | a speaker on the MAX98357A output (optional, `menuconfig`) | the built-in speaker (ES8388) |
 
 The Spectrum's picture is 352×300: the 256×192 screen with 48 pixels of
 border left and right and 54 lines above and below. Every pixel is shown
-twice in each direction, so it fills the panel's height as 704×600.
+twice in each direction, so it fills the panel's height as 704×600 (on the
+Tab5 2.4 times: 844×720).
 
 ## Getting started
 
@@ -111,7 +113,7 @@ twice in each direction, so it fills the panel's height as 704×600.
 - [ESP-IDF](https://github.com/espressif/esp-idf) v5.5 (developed with v5.5.4)
 - [esp32emu](https://github.com/rlucencic/esp32emu), checked out next to this project (`../esp32emu`)
 - The Spectrum ROM images in `roms/` (see [roms/README.md](roms/README.md))
-- A microSD card, FAT32
+- A microSD card, FAT32 or exFAT
 
 ### 2. Build and flash
 
@@ -120,6 +122,10 @@ git clone https://github.com/rlucencic/esp32emu.git     # the shared runtime, ne
 git clone https://github.com/rlucencic/esp32zx.git && cd esp32zx
 idf.py build
 idf.py -p /dev/cu.usbmodem… flash      # app and the ROM images
+
+# or for the M5Stack Tab5 (its own build folder and settings):
+idf.py -B build-tab5 -DIDF_TARGET=esp32p4 -DSDKCONFIG=build-tab5/sdkconfig build
+idf.py -B build-tab5 -DIDF_TARGET=esp32p4 -DSDKCONFIG=build-tab5/sdkconfig -p /dev/cu.usbmodem… flash
 ```
 
 Later updates only need `idf.py -p … app-flash`. Instead of flashing the
@@ -190,7 +196,7 @@ flowchart LR
   PSRAM[(PSRAM<br>RAM · ROMs · picture · images)]
   SD[(microSD<br>zx/)]
   EMU <--> PSRAM
-  PRES --> LCD[1024×600 panel]
+  PRES --> LCD[1024×600 or 1280×720 panel]
   BLE -- keys --> EMU
   EMU <--> SD
   NET <--> SD
@@ -231,6 +237,10 @@ traps, debugging options and the lessons learned along the way.
 
 ## Limitations
 
+- The M5Stack Tab5 port is new: the machine starts there and runs at full
+  speed at its start-up screen, with core 1 far less busy than on the S3,
+  but sound, touch, Bluetooth and the Tab5 Keyboard have not been tried on
+  it by hand yet.
 - No 48K or 16K model (48K software runs in 48 BASIC or from 48K
   snapshots), no Pentagon or other clones, no Interface 1, Microdrive or
   printer.
