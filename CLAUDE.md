@@ -10,9 +10,9 @@ The board side (tasks, LCD, touch, SD, WiFi, BLE, setup screen, web page,
 console), the Z80 core (`components/z80`) and the uPD765
 (`components/upd765`) are the shared library in `../esp32emu`, also used by
 `../esp32ste`, `../esp32mac`, `../esp32cpc` (which shares the Z80 and the
-uPD765), `../esp32cbm` and `../esp32xl`. See its CLAUDE.md for the runtime
-and the board-level lessons; changes there need all six projects built,
-for both boards.
+uPD765), `../esp32cbm`, `../esp32xl`, `../esp32msx` (which shares the Z80)
+and `../esp32gs`. See its CLAUDE.md for the runtime and the board-level
+lessons; changes there need all eight projects built, for both boards.
 
 ## Hardware
 

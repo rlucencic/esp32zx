@@ -35,10 +35,12 @@ It's the sibling of [esp32ste](https://github.com/rlucencic/esp32ste) (Atari
 STE), [esp32mac](https://github.com/rlucencic/esp32mac) (Macintosh Plus,
 SE, Classic), [esp32cpc](https://github.com/rlucencic/esp32cpc) (Amstrad
 CPC), [esp32cbm](https://github.com/rlucencic/esp32cbm) (Commodore 64 and
-128) and [esp32xl](https://github.com/rlucencic/esp32xl) (Atari 800XL and
-130XE); all six are built on the shared runtime
+128), [esp32xl](https://github.com/rlucencic/esp32xl) (Atari 800XL and
+130XE), [esp32msx](https://github.com/rlucencic/esp32msx) (MSX1 and MSX2)
+and [esp32gs](https://github.com/rlucencic/esp32gs) (Apple IIGS); all eight
+are built on the shared runtime
 [esp32emu](https://github.com/rlucencic/esp32emu), which also holds the Z80
-core this one shares with the CPC and the C128.
+core this one shares with the CPC, the C128 and the MSX.
 
 ## Features
 
