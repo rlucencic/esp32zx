@@ -85,8 +85,9 @@ core this one shares with the CPC, the C128 and the MSX.
   a PC keyboard has them (cursor keys, Backspace, Esc for BREAK,
   punctuation through SYMBOL SHIFT)
 - **Web page** at `http://spectrum.local`: drop tapes, disks, snapshots or
-  `.ZIP` files onto it, put them into drives, eject, make blank disks and
-  tapes, and watch the Spectrum, drives, board and Bluetooth devices live
+  `.ZIP` files onto it (with a progress bar), put them into drives, eject,
+  make blank disks and tapes, and watch the Spectrum, drives, board and
+  Bluetooth devices live
 - **Sound** on the board's speaker (optional, `menuconfig`)
 
 <p align="center">
