@@ -175,6 +175,13 @@ bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
 
 ## Testing
 
+- **Debugger** (esp32emu's `components/emudbg`, the VS Code extension
+  `../esp32emu-vscode`): the board serves it on port 6502;
+  `ZX_DEBUG=<port> build/zx_host ...` serves it from the host build, which
+  then runs in real time until killed. The CPUs (Z80), `where()`,
+  the screen and typing are described in `components/zx/zx.c` (`emudbg_set_machine()`
+  at every init).
+
 - **Host build**: `make -C components/zx/host`, then
   `build/zx_host <128|plus2|plus3> [frames] [out.ppm]` (704x600). Options in
   `host_main.c`: `ZX_ROMS`, `ZX_DISKA/B`, `ZX_NEWDISK` (.dsk: +3, else TRD),

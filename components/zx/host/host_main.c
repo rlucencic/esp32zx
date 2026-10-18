@@ -31,6 +31,8 @@
  *   ZX_RING=<n>             ... after the n instructions before it
  *   ZX_WAV=<file>           record the sound (stereo WAV)
  *   ZX_QUIET                no summary
+ *   ZX_DEBUG=<port>         serve the debugger (esp32emu's docs/debugger.md) on
+ *                           127.0.0.1:<port> and run in real time until killed
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,6 +40,7 @@
 #include <time.h>
 #include "zx.h"
 #include "z80.h"
+#include "emudbg.h"
 
 static uint16_t s_frame[ZX_SCREEN_WIDTH * ZX_SCREEN_HEIGHT];
 
@@ -323,6 +326,7 @@ int main(int argc, char **argv)
             s_ring = calloc(s_ring_n, sizeof(z80_t));
         }
     }
+    emudbg_host_run("ZX_DEBUG", zx_run_frame, 50);
     int status_every = getenv("ZX_STATUS") ? atoi(getenv("ZX_STATUS")) : 0;
     uint32_t wav_frames = 0;
     if (wav) {

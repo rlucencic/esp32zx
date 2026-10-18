@@ -15,7 +15,9 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "zx_internal.h"
+#include "emudbg.h"
 #include "upd765.h"
 
 zx_t zx;
@@ -190,6 +192,33 @@ void zx_reset(void)
     tape_reset();
 }
 
+/* ---- The debugger (emudbg.h) ---- */
+
+static emudbg_cpu_t s_dbg_cpus[] = {
+    { .name = "Z80", .arch = &emudbg_arch_z80 },
+};
+
+static void dbg_where(char *buf, size_t len)
+{
+    snprintf(buf, len, "frame %lu, T-state %ld", (unsigned long)zx.frames, (long)z80.t);
+}
+
+static void dbg_screen(int *width, int *height)
+{
+    *width = ZX_SCREEN_WIDTH;
+    *height = ZX_SCREEN_HEIGHT;
+}
+
+static emudbg_machine_t s_dbg = {
+    .cpus = s_dbg_cpus,
+    .cpu_count = 1,
+    .where = dbg_where,
+    .reset = zx_reset,
+    .screen = dbg_screen,
+    .render_line = zx_render_line_rgb565,
+    .type = zx_type,
+};
+
 bool zx_init(const zx_config_t *config)
 {
     if (config->ram == NULL || config->rom == NULL || config->frame == NULL ||
@@ -220,6 +249,8 @@ bool zx_init(const zx_config_t *config)
     memset(config->ram, 0, ZX_RAM_SIZE);
     audio_init();
     zx_reset();
+    s_dbg.name = zx.plus3 ? "ZX Spectrum +3" : "ZX Spectrum 128K";
+    emudbg_set_machine(&s_dbg);
     return true;
 }
 
