@@ -15,6 +15,11 @@
 </p>
 
 <p align="center">
+  <b>Work in progress:</b> not everything has been tested, and games and demos may or may not
+  work satisfactorily.
+</p>
+
+<p align="center">
   <img alt="The Spectrum 128 start-up menu: Tape Loader, 128 BASIC, Calculator, 48 BASIC, Tape Tester" src="docs/images/menu-128.png" width="49%">
   <img alt="+3 BASIC: a program saved on a new disk, CAT shows BOARD 1K, 172K free" src="docs/images/plus3-cat.png" width="49%">
   <br>
