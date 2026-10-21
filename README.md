@@ -47,8 +47,9 @@ and II, Tab5 only), [esp32mac3](https://github.com/rlucencic/esp32mac3)
 [esp32msx](https://github.com/rlucencic/esp32msx) (MSX1 and MSX2),
 [esp32gs](https://github.com/rlucencic/esp32gs) (Apple IIGS),
 [esp32coco](https://github.com/rlucencic/esp32coco) (Tandy Color Computer 2
-and 3) and
-[esp32pc](https://github.com/rlucencic/esp32pc) (IBM PC/XT and PC/AT);
+and 3),
+[esp32pc](https://github.com/rlucencic/esp32pc) (IBM PC/XT and PC/AT) and
+[esp32ami](https://github.com/rlucencic/esp32ami) (Amiga 500, 2000 and 600);
 all are built on the shared runtime
 [esp32emu](https://github.com/rlucencic/esp32emu), which also holds the Z80
 core this one shares with the CPC, the C128 and the MSX.
