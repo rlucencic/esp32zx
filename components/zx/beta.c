@@ -244,6 +244,16 @@ bool beta_has_disk(int drive)
     return drive >= 0 && drive < ZX_DRIVES && s_disk[drive] != NULL;
 }
 
+const uint8_t *beta_sector(int drive, uint32_t lsn)
+{
+    trd_t *d = drive >= 0 && drive < ZX_DRIVES ? s_disk[drive] : NULL;
+    if (d == NULL || lsn >= (uint32_t)CYLS * d->sides * SECTORS) {
+        return NULL;
+    }
+    uint32_t track = lsn / SECTORS;
+    return sector_ptr(d, track / d->sides, track % d->sides, lsn % SECTORS);
+}
+
 /* ---- The disk calls, for both kinds of drive ---- */
 
 static bool is_dsk(const char *path)
@@ -280,6 +290,7 @@ bool zx_disk_insert(int drive, const char *path)
             return false;
         }
         beta_eject(drive);
+        space_update();
         return true;
     }
     trd_t *d = load_image(path);
@@ -289,6 +300,7 @@ bool zx_disk_insert(int drive, const char *path)
     beta_eject(drive);
     upd765_disk_eject(drive);
     s_disk[drive] = d;
+    space_update();
     return true;
 }
 
@@ -297,6 +309,7 @@ void zx_disk_eject(int drive)
     if (drive >= 0 && drive < ZX_DRIVES) {
         beta_eject(drive);
         upd765_disk_eject(drive);
+        space_update();
     }
 }
 
@@ -334,6 +347,7 @@ void zx_disk_flush(void)
         }
     }
     upd765_disk_flush();
+    space_update();
 }
 
 bool zx_disk_create(const char *path, uint32_t bytes)

@@ -121,6 +121,12 @@ void zx_disk_status(zx_disk_status_t *status);
 /* True for file names the model's drives take */
 bool zx_disk_fits(zx_model_t model, const char *name);
 
+/* A disk's free space and size in bytes as its DOS counts them (+3DOS,
+ * TR-DOS), worked out at insert, eject and flush; false when not known.
+ * Any task.
+ */
+bool zx_disk_space(int drive, uint64_t *free_bytes, uint64_t *size);
+
 /* ---- Tape ----
  *
  * .TAP and .TZX. The tape starts when the ROM's loader does (or with

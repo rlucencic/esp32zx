@@ -102,6 +102,14 @@ uint8_t beta_in(uint16_t port);
 void beta_out(uint16_t port, uint8_t v);
 void beta_frame(void);
 bool beta_has_disk(int drive);
+/* A TRD's logical sector (in the file's order: tracks, the sides of a
+ * cylinder in turn) in memory; NULL past the end or with no TRD
+ */
+const uint8_t *beta_sector(int drive, uint32_t lsn);
+
+/* ---- space.c: the disks' free space ---- */
+
+void space_update(void);                /* at the disk calls that change it */
 
 /* ---- input.c ---- */
 

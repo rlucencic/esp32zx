@@ -374,6 +374,11 @@ int main(int argc, char **argv)
             if (zx_disk_path(d)) {
                 printf("drive %c: %u sectors read, %u written\n", 'A' + d, ds.reads[d], ds.writes[d]);
             }
+            uint64_t free_bytes, size;
+            if (zx_disk_space(d, &free_bytes, &size)) {
+                printf("%c: %llu bytes free of %llu\n", 'A' + d, (unsigned long long)free_bytes,
+                       (unsigned long long)size);
+            }
         }
         zx_tape_status_t ts;
         zx_tape_status(&ts);

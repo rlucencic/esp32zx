@@ -125,6 +125,10 @@ bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
   [cyl][side][sector] (one-sided images spread out), SCL turned into a TRD
   (read-only), writes by sector, FORMAT parsed from the raw track; and the
   `zx_disk_*` calls for both kinds of drive (by extension).
+- `space.c`: the disks' free space for the web page (esp32emu's
+  `diskspace`), worked out at insert, eject and flush: TR-DOS's system
+  sector; +3DOS's directory by the disk specification (none: the +3's
+  173K format) or, with &41/&C1 sector IDs, the CPC's formats.
 - `snap.c`: SNA 48K/128K, Z80 v1-v3 (Pentagon, Scorpion ... refused);
   48K snapshots get `$7FFD` = $30 (+3: `$1FFD` = $04).
 - `input.c`: queue, matrix, typing (3 frames down, 3 up), joystick types.
@@ -207,6 +211,8 @@ bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
 - Not verified yet: sound on the speaker, a BLE keyboard on the Spectrum,
   the web page's drop area with ZIPs, a +3 game disk, TRD/SCL game disks,
   128K snapshots.
+- **Free disk space** (`space.c`): host, CAT's and LIST's own figures;
+  Tab5 (2026-10-21): a blank TR-DOS disk 651264 (2544 sectors).
 
 ## Open items
 
