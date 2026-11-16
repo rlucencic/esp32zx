@@ -4,7 +4,7 @@ A ZX Spectrum (Z80 with the ULA's contention, ULA, AY, 128K/+3 paging; the
 +3's uPD765, a Beta 128 with TR-DOS on the 128K and +2) on an ESP32-S3
 board with a 1024x600 touch LCD. Bluetooth keyboard, tapes (TAP, TZX),
 disks (DSK, TRD, SCL), snapshots (SNA, Z80), an LVGL setup screen, a web
-page for images and live status. ESP-IDF v5.5.4, C.
+page for images and live status. ESP-IDF v5.5.6, C.
 
 The board side (tasks, LCD, touch, SD, WiFi, BLE, setup screen, web page,
 console), the Z80 core (`components/z80`) and the uPD765
@@ -27,7 +27,7 @@ Build like the others (the shell's default Python environment doesn't match):
 
 ```sh
 bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
-  export IDF_PYTHON_ENV_PATH=/Users/robertlucencic/.espressif/tools/python/v5.5.4/venv; \
+  export IDF_PYTHON_ENV_PATH=/Users/robertlucencic/.espressif/tools/python/v5.5.6/venv; \
   export PATH=$IDF_PYTHON_ENV_PATH/bin:$PATH; \
   idf.py build && idf.py -p /dev/cu.usbmodem1101 -b 115200 app-flash'
 ```
@@ -61,7 +61,7 @@ beside the MaTouch build, on `/dev/cu.usbmodem3101`:
 
 ```sh
 bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
-  export IDF_PYTHON_ENV_PATH=/Users/robertlucencic/.espressif/tools/python/v5.5.4/venv; \
+  export IDF_PYTHON_ENV_PATH=/Users/robertlucencic/.espressif/tools/python/v5.5.6/venv; \
   export PATH=$IDF_PYTHON_ENV_PATH/bin:$PATH; \
   idf.py -B build-tab5 -DIDF_TARGET=esp32p4 -DSDKCONFIG=$PWD/build-tab5/sdkconfig build && \
   idf.py -B build-tab5 -DIDF_TARGET=esp32p4 -DSDKCONFIG=$PWD/build-tab5/sdkconfig -p /dev/cu.usbmodem3101 flash'
