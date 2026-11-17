@@ -13,8 +13,10 @@ models you want are needed.
 
 Without `trdos.rom` the 128K and +2 run without disks.
 
-Without flashing, the emulator also finds them in a `roms` folder on the SD
-card under the same names.
+Without flashing, the emulator also finds them in the `zx/roms` folder on the
+SD card under the same names. A card set up before 2026-11-17 has them in a
+shared `roms` folder: esp32emu's `tools/sd_folders.ps1 E:\` (PowerShell 7,
+the card in a card reader) moves them there.
 
 Amstrad allowed the Spectrum ROMs to be distributed with emulators, as long
 as the copyright messages stay intact. Dumps are on Planet Emulation's

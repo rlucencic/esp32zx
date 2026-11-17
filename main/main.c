@@ -81,7 +81,7 @@ static bool missing(const char *what)
     static char message[200];
     snprintf(message, sizeof(message),
              "No %s ROM: put %s into roms/ and flash with idf.py flash, or copy it into the "
-             "\"roms\" folder on the SD card.", model_full[settings.model], what);
+             "\"zx/roms\" folder on the SD card.", model_full[settings.model], what);
     emu_set_message(message);
     return false;
 }

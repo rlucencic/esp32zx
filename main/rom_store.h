@@ -6,7 +6,7 @@
 /*
  * The Spectrum's ROMs: from the zx_roms flash partition (roms/<name> in the
  * project, written by idf.py flash into 16 KB slots), else from the SD
- * card's "roms" folder under the same names.
+ * card's "zx/roms" folder under the same names.
  */
 typedef enum { ROM_128, ROM_PLUS2, ROM_PLUS3, ROM_TRDOS, ROM_COUNT } rom_id_t;
 

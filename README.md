@@ -145,7 +145,9 @@ idf.py -B build-tab5 -DIDF_TARGET=esp32p4 -DSDKCONFIG=build-tab5/sdkconfig -p /d
 ```
 
 Later updates only need `idf.py -p … app-flash`. Instead of flashing the
-ROMs, you can also copy them into a `roms` folder on the SD card.
+ROMs, you can also copy them into the `zx/roms` folder on the SD card. A
+card set up before 2026-11-17 has them in a shared `roms` folder:
+esp32emu's `tools/sd_folders.ps1` moves them.
 
 ### 3. First start
 
