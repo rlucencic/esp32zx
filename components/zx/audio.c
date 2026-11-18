@@ -43,6 +43,8 @@ static struct {
     volatile uint32_t head, tail;
     volatile uint64_t now;              /* T-states the render side may produce */
     uint32_t dropped;
+    uint16_t beeper_changes;            /* this frame's, and the last frame's (the web page) */
+    uint16_t beeper_last;
 } ay;
 
 static void push_event(uint64_t t, uint8_t reg, uint8_t value)
@@ -95,6 +97,7 @@ void ay_reset(void)
 
 void beeper(uint8_t level, int t)
 {
+    ay.beeper_changes++;
     push_event(zx.clock + (uint64_t)(t < 0 ? 0 : t), EV_BEEPER, level);
 }
 
@@ -103,8 +106,21 @@ void beeper_tape(bool level, uint64_t when)
     push_event(when, EV_TAPE, level);
 }
 
+/* For the web page: the registers as the program wrote them */
+void zx_get_sound(zx_sound_t *sound)
+{
+    memcpy(sound->reg, ay.reg, sizeof(sound->reg));
+}
+
+uint16_t audio_beeper_changes(void)
+{
+    return ay.beeper_last;
+}
+
 void audio_frame_end(void)
 {
+    ay.beeper_last = ay.beeper_changes;
+    ay.beeper_changes = 0;
     uint64_t t = zx.clock + ZX_FRAME_T;
     if (t > ay.now) {
         __atomic_store_n(&ay.now, t, __ATOMIC_RELEASE);

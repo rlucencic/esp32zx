@@ -56,7 +56,24 @@ typedef struct {
     uint8_t port_7ffd, port_1ffd;
     uint8_t border;
     bool trdos;                 /* the TR-DOS ROM is paged in */
+    /* For the web page (copies, read while the emulation runs): */
+    uint8_t im, i;              /* the Z80's interrupt mode and I register */
+    bool ei;                    /* ... its interrupts enabled (IFF1) */
+    uint16_t beeper;            /* the beeper's (EAR, MIC) changes in the last frame */
 } zx_status_t;
+
+/* The AY's registers now (the sound the program asked for) */
+typedef struct {
+    uint8_t reg[14];
+} zx_sound_t;
+
+void zx_get_sound(zx_sound_t *sound);
+
+/* The colours the screen's attributes use now: bit n for colour n (0-7,
+ * 8-15 BRIGHT; BRIGHT black counts as black), and the cells with FLASH.
+ * Reads the 768 attributes of the screen shown.
+ */
+void zx_screen_colours(uint16_t *colours, unsigned *flashing);
 
 /* Set up the machine and cold-reset it. False if something is missing. */
 bool zx_init(const zx_config_t *config);

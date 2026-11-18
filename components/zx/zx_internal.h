@@ -83,6 +83,7 @@ void ay_reset(void);
 void beeper(uint8_t level, int t);      /* 0-3: EAR (bit 1) and MIC (bit 0) out, at frame time t */
 void beeper_tape(bool level, uint64_t when);    /* the tape's sound, at T-state `when` */
 void audio_frame_end(void);
+uint16_t audio_beeper_changes(void);    /* the beeper's changes in the last frame (the web page) */
 
 /* ---- tape.c ---- */
 

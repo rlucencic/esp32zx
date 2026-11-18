@@ -548,22 +548,159 @@ static void tape_text(char *text, size_t len)
              ts.playing ? ", playing" : ", stopped", ts.fast ? "" : ", real time");
 }
 
+/* The web page's machine card: the state now, a short line a row. The
+ * whole /api/status reply has 4 KB (esp32emu's STATUS_SIZE), these rows
+ * at most ~1.8 KB of it: keep them short (a " goes out as \").
+ */
+
+/* The colours as the ULA draws them (ula.c): 0-7, 8-15 BRIGHT */
+static uint32_t colour_rgb(unsigned c)
+{
+    unsigned level = c & 8 ? 0xFF : 0xD7;
+    return ((c & 2) ? level << 16 : 0) | ((c & 4) ? level << 8 : 0) | ((c & 1) ? level : 0);
+}
+
+static size_t swatch(char *text, size_t size, uint32_t rgb)
+{
+    int n = snprintf(text, size, "<b style=\"background:#%06lx\">&nbsp;&nbsp;&nbsp;</b> ",
+                     (unsigned long)(rgb & 0xFFFFFF));
+    return n < 0 ? 0 : (size_t)n < size ? (size_t)n : size - 1;
+}
+
+/* The AY's channels as they sound now (its clock 1.7734 MHz), the beeper */
+static void sound_text(char *text, size_t size, const zx_status_t *s)
+{
+    zx_sound_t snd;
+    zx_get_sound(&snd);
+    const uint8_t *r = snd.reg;
+    const uint32_t clock = ZX_CLOCK_HZ / 2;
+    size_t n = 0;
+    bool envelope = false;
+    for (int c = 0; c < 3 && n < size; c++) {
+        bool tone = !(r[7] & (1 << c)), noise = !(r[7] & (8 << c));
+        unsigned volume = r[8 + c] & 31;
+        if (volume == 0) {
+            continue;
+        }
+        unsigned period = r[c * 2] | ((r[c * 2 + 1] & 15) << 8);
+        char what[40];
+        if (tone) {
+            snprintf(what, sizeof(what), "%lu Hz%s", (unsigned long)(clock / (16 * (period ? period : 1))),
+                     noise ? " + noise" : "");
+        } else {
+            snprintf(what, sizeof(what), noise ? "noise" : "a fixed level");
+        }
+        char level[16];
+        snprintf(level, sizeof(level), "volume %u", volume);
+        n += snprintf(text + n, size - n, "%s%c %s, %s", n ? "; " : "AY: ", 'A' + c, what,
+                      (volume & 16) ? "envelope" : level);
+        envelope |= volume & 16;
+    }
+    if (n == 0) {
+        n = snprintf(text, size, "AY silent");
+    }
+    if (envelope && n < size) {
+        /* one sweep of the envelope: 256 x its period in AY cycles */
+        unsigned period = r[11] | (r[12] << 8);
+        uint64_t ms = (256ull * (period ? period : 1) * 1000 + clock / 2) / clock;
+        n += snprintf(text + n, size - n, "; envelope shape %u, %lu ms", r[13] & 15, (unsigned long)ms);
+    }
+    if (n < size) {
+        /* two changes a cycle, 50 frames a second */
+        if (s->beeper) {
+            snprintf(text + n, size - n, "; the beeper ~%u Hz", s->beeper * 25u);
+        } else {
+            snprintf(text + n, size - n, "; the beeper quiet");
+        }
+    }
+}
+
 static void status(emu_json_t *j, int section)
 {
-    char text[160];
+    char text[200];
     if (section == EMU_STATUS_ROWS) {
-        emu_json_row(j, "System", model_full[zx_model()]);
-        emu_json_row(j, "ROMs", s_rom_text);
         zx_status_t s;
         zx_get_status(&s);
-        static const char *const colours[8] = { "black", "blue", "red", "magenta", "green", "cyan",
-                                                "yellow", "white" };
-        snprintf(text, sizeof(text), "256 × 192, %s border, %s screen%s", colours[s.border & 7],
-                 (s.port_7ffd & 0x08) ? "shadow" : "normal", s.trdos ? ", TR-DOS paged in" : "");
+        bool plus3 = zx_model() == ZX_MODEL_PLUS3;
+        char im[24];
+        snprintf(im, sizeof(im), s.im == 2 ? "IM 2, I = $%02X" : "IM %u", s.im == 2 ? s.i : s.im);
+        snprintf(text, sizeof(text), "%s: a Z80A at 3.55 MHz (%s, interrupts %s), 128 KB RAM, %s, an AY-3-8912",
+                 model_full[zx_model()], im, s.ei ? "on" : "off", plus3 ? "the gate array" : "the ULA");
+        emu_json_row(j, "System", text);
+
+        /* the ROM at $0000 now: $7FFD bit 4 (+3: and $1FFD bit 2) picks it */
+        static const char *const roms_128[2] = { "the 128 editor", "48 BASIC" };
+        static const char *const roms_plus3[4] = { "the editor", "the syntax checker", "+3DOS", "48 BASIC" };
+        unsigned rom = ((s.port_7ffd >> 4) & 1) | (plus3 ? (s.port_1ffd >> 1) & 2 : 0);
+        char now[40];
+        if (s.trdos) {
+            snprintf(now, sizeof(now), "TR-DOS");
+        } else if (plus3 && (s.port_1ffd & 1)) {
+            snprintf(now, sizeof(now), "RAM");
+        } else {
+            snprintf(now, sizeof(now), "ROM %u (%s)", rom, plus3 ? roms_plus3[rom] : roms_128[rom]);
+        }
+        snprintf(text, sizeof(text), "%s; at $0000 now: %s", s_rom_text, now);
+        emu_json_row(j, "ROM", text);
+
+        /* the 16 KB banks at $0000, $4000, $8000, $C000 */
+        char ports[32];
+        if (plus3) {
+            snprintf(ports, sizeof(ports), "$7FFD = $%02X, $1FFD = $%02X", s.port_7ffd, s.port_1ffd);
+        } else {
+            snprintf(ports, sizeof(ports), "$7FFD = $%02X", s.port_7ffd);
+        }
+        if (plus3 && (s.port_1ffd & 1)) {
+            static const uint8_t special[4][4] = {
+                { 0, 1, 2, 3 }, { 4, 5, 6, 7 }, { 4, 5, 6, 3 }, { 4, 7, 6, 3 },
+            };
+            const uint8_t *b = special[(s.port_1ffd >> 1) & 3];
+            snprintf(text, sizeof(text), "%s: all RAM, banks %u, %u, %u, %u at $0000-$FFFF", ports, b[0], b[1], b[2],
+                     b[3]);
+        } else {
+            snprintf(text, sizeof(text), "%s: ROM, banks 5, 2, %u at $0000-$FFFF", ports, s.port_7ffd & 7);
+        }
+        size_t n = strlen(text);
+        snprintf(text + n, sizeof(text) - n, "%s%s", (s.port_7ffd & 0x20) ? "; paging locked (48K)" : "",
+                 plus3 && (s.port_1ffd & 0x08) ? "; disk motor on" : "");
+        emu_json_row(j, "Memory", text);
+
+        static const char *const names[8] = { "black", "blue", "red", "magenta", "green", "cyan", "yellow",
+                                              "white" };
+        snprintf(text, sizeof(text), "256 × 192, 2 colours a cell of 8 × 8 (attributes); the %s screen (bank %u); "
+                 "border %s", (s.port_7ffd & 0x08) ? "shadow" : "normal", (s.port_7ffd & 0x08) ? 7 : 5,
+                 names[s.border & 7]);
         emu_json_row(j, "Screen", text);
-        snprintf(text, sizeof(text), "%s on the numeric keypad%s (F11 switches)", joystick_names[settings.joystick],
-                 s_arrows_joystick ? " and cursor keys" : "");
+
+        /* the colours the attributes use now, of the 15 */
+        uint16_t used;
+        unsigned flashing;
+        zx_screen_colours(&used, &flashing);
+        static char swatches[1000];
+        n = (size_t)snprintf(swatches, sizeof(swatches), "%d of 15: ", __builtin_popcount(used));
+        for (unsigned c = 0; c < 16; c++) {
+            if (used & (1u << c)) {
+                n += swatch(swatches + n, sizeof(swatches) - n, colour_rgb(c));
+            }
+        }
+        if (flashing && n < sizeof(swatches)) {
+            snprintf(swatches + n, sizeof(swatches) - n, "%u cells flashing", flashing);
+        }
+        emu_json_row(j, "Colours", swatches);
+
+        sound_text(text, sizeof(text), &s);
+        emu_json_row(j, "Sound", text);
+        emu_json_row(j, "Keyboard", "By position; Shift CAPS SHIFT, Ctrl or Alt SYMBOL SHIFT, Esc BREAK, Backspace "
+                     "DELETE, Tab EXTEND MODE, punctuation as on the PC; F9 tape play/stop, F10 rewind");
+        snprintf(text, sizeof(text), "%s on the keypad%s; F11: Kempston, Sinclair, cursor; F12: %s",
+                 joystick_names[settings.joystick], s_arrows_joystick ? " and the cursor keys (0, 5, Alt fire)" :
+                 " (0, 5 fire)", s_arrows_joystick ? "off" : "the cursor keys too");
         emu_json_row(j, "Joystick", text);
+        snprintf(text, sizeof(text), "%s; tapes .TAP, .TZX (%s); snapshots .SNA, .Z80",
+                 plus3 ? "The +3's drive (a uPD765): .DSK" :
+                 s_cfg.trdos ? "Beta 128 (a WD1793, TR-DOS): .TRD, .SCL (read-only)" : "No disks (no trdos.rom)",
+                 settings.tape_fast ? "standard blocks at once" : "in real time");
+        emu_json_row(j, "Storage", text);
         return;
     }
     zx_disk_status_t ds;

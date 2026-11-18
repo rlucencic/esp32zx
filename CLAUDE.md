@@ -45,6 +45,16 @@ bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
   with the IDF venv's Python (`-I`). One touch per `send` call.
 - `curl http://spectrum.local/api/status`; disks: see `../esp32emu/README.md`
   (drives 1 A:, 2 B:, 3 Tape, 4 Snapshot).
+- The web page's machine card (`status()`, `main/main.c`) shows the state
+  now: the Z80's interrupt mode (IM 2's I), the ROM at $0000 (TR-DOS, all
+  RAM), `$7FFD`/`$1FFD` and the banks, the screen shown and the border,
+  the colours the attributes use as swatches and the FLASH cells, the AY's
+  channels and the beeper (its changes in the last frame, counted in
+  `audio.c`'s `beeper()`), the special keys, the joystick, the formats.
+  The core's copies for it: `zx_get_status()`, `zx_get_sound()`,
+  `zx_screen_colours()`. The whole reply has 4 KB (esp32emu's
+  `STATUS_SIZE`); the rows' longest case is ~1.75 KB of it, measured on the
+  host: keep them short.
 - Flashing restarts the board and ends the user's session: say so first.
 
 Console commands: the shared ones (`s` `L` `r` `F` `t` `i`, see

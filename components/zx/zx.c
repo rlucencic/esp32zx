@@ -325,6 +325,27 @@ void zx_get_status(zx_status_t *s)
     s->port_1ffd = zx.p1ffd;
     s->border = zx.ula_out & 7;
     s->trdos = zx.trdos_active;
+    /* for the web page: plain copies (the emulation runs meanwhile) */
+    s->im = z80.im;
+    s->i = z80.i;
+    s->ei = z80.iff1;
+    s->beeper = audio_beeper_changes();
+}
+
+void zx_screen_colours(uint16_t *colours, unsigned *flashing)
+{
+    const uint8_t *attr = zx.cfg.ram + ((zx.p7ffd & 0x08) ? 7 : 5) * 0x4000 + 0x1800;
+    uint16_t used = 0;
+    unsigned flash = 0;
+    for (int n = 0; n < 768; n++) {
+        uint8_t a = attr[n];
+        unsigned bright = (a >> 3) & 8;
+        unsigned ink = (a & 7) | bright, paper = ((a >> 3) & 7) | bright;
+        used |= (1u << (ink == 8 ? 0 : ink)) | (1u << (paper == 8 ? 0 : paper));
+        flash += a >> 7;
+    }
+    *colours = used;
+    *flashing = flash;
 }
 
 zx_model_t zx_model(void)
