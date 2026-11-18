@@ -94,8 +94,8 @@ bool rom_store_load(rom_id_t id, uint8_t *buf)
         return false;
     }
     uint32_t size = rom_store_size(id);
-    if (from_partition(roms[id].slot * SLOT, size, buf) && plausible(buf, size)) {
-        return true;
+    if (from_sd(roms[id].name, buf, size) == (long)size && plausible(buf, size)) {
+        return true;                    /* the card's overrides the built-in one */
     }
-    return from_sd(roms[id].name, buf, size) == (long)size && plausible(buf, size);
+    return from_partition(roms[id].slot * SLOT, size, buf) && plausible(buf, size);
 }

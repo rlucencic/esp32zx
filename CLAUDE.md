@@ -85,7 +85,7 @@ bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
 | Path | What |
 |---|---|
 | `main/main.c` | The Spectrum as an `emu_machine_t`: memory, start, key map, joystick, drives, status, console |
-| `main/rom_store.c` | ROMs from the `zx_roms` partition slots, else the SD card's `zx/roms/` |
+| `main/rom_store.c` | ROMs from the `zx_roms` partition slots; one of the same name in the SD card's `zx/roms/` overrides it |
 | `main/settings.c` | NVS `zx`: `model`, `joystick`, `tape_fast` |
 | `components/zx/` | The Spectrum, platform independent (`include/zx.h`) |
 | `components/zx/host/` | Host build: `zx_host` (see Testing) |
@@ -137,7 +137,8 @@ bash -c '. $IDF_PATH/export.sh >/dev/null 2>&1; \
 
 - NVS `zx`: `model`, `joystick` (F11 cycles it), `tape_fast`. NVS
   `zxdisks`: `disk_a`..`disk_d` (A:, B:, tape, snapshot).
-- SD card: `zx/` (all images; made if missing), `zx/roms/` (optional ROMs).
+- SD card: `zx/` (all images; made if missing), `zx/roms/` (overrides of
+  the flashed ROMs).
   Until 2026-11-17 a shared `roms/`: esp32emu's `tools/sd_folders.ps1`
   moves an old card's files.
 - A snapshot "in the drive" loads when inserted and again at every start.
